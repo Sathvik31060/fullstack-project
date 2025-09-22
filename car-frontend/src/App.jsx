@@ -17,10 +17,14 @@ import Testimonial from "./components/Testimonial/Testimonial";
 import AdminLogin from "./components/AdminLogin/AdminLogin";
 import AdminSignup from "./components/AdminSignup/AdminSignup";
 import Admin from "./components/Admin/Admin";
+
 const App = () => {
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
   );
+
+  // ✅ Added BASE_URL here (line 19 equivalent)
+  const BASE_URL = "http://localhost:9091/car-frontend";
 
   const element = document.documentElement;
 
@@ -62,11 +66,10 @@ const App = () => {
             path="/about"
             element={isAuthenticated ? <AboutUs /> : <Navigate to="/" />}
           />
-         <Route
+          <Route
             path="/Footer"
             element={isAuthenticated ? <Footer /> : <Navigate to="/" />}
           />
-           
           <Route
             path="/cars"
             element={isAuthenticated ? <CarList /> : <Navigate to="/" />}
@@ -79,20 +82,19 @@ const App = () => {
             path="/payment"
             element={isAuthenticated ? <Payment /> : <Navigate to="/" />}
           />
-           <Route
+          <Route
             path="/ServiceList"
             element={isAuthenticated ? <ServicesList /> : <Navigate to="/" />}
           />
-           <Route
+          <Route
             path="/Testimonial"
             element={isAuthenticated ? <Testimonial /> : <Navigate to="/" />}
           />
-          
-           <Route
+          <Route
             path="/AdminLogin"
             element={isAuthenticated ? <AdminLogin/> : <Navigate to="/" />}
           />
-           <Route
+          <Route
             path="/AdminSignup"
             element={isAuthenticated ? <AdminSignup/> : <Navigate to="/" />}
           />
@@ -100,8 +102,7 @@ const App = () => {
             path="/Admin"
             element={isAuthenticated ? <Admin/> : <Navigate to="/" />}
           />
-          
-          
+
           {/* Public routes */}
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
