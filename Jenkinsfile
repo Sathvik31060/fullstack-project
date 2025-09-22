@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK21'        // Make sure JDK 21 is installed in Jenkins
+        jdk 'JDK_HOME'        // Make sure JDK 21 is installed in Jenkins
         maven 'MAVEN_HOME'
     }
 
