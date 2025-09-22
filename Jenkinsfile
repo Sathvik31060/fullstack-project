@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK_HOME'
+        jdk 'JDK21'        // Make sure JDK 21 is installed in Jenkins
         maven 'MAVEN_HOME'
     }
 
@@ -37,13 +37,8 @@ pipeline {
         stage('Build Frontend (Vite)') {
             steps {
                 dir("${env.FRONTEND_DIR}") {
-                    // Install dependencies
                     sh 'npm install'
-                    
-                    // Fix permission for vite binary
-                    sh 'chmod +x node_modules/.bin/vite'
-
-                    // Build the frontend
+                    sh 'chmod +x node_modules/.bin/vite'  // Fix permission
                     sh 'npm run build'
                 }
             }
