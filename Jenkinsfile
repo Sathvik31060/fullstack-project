@@ -25,14 +25,25 @@ pipeline {
             }
         }
 
+        stage('Setup Node') {
+            steps {
+                script {
+                    def nodeHome = tool name: 'NODE_HOME', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    env.PATH = "${nodeHome}/bin:${env.PATH}"
+                }
+            }
+        }
+
         stage('Build Frontend (Vite)') {
             steps {
                 dir("${env.FRONTEND_DIR}") {
-                    script {
-                        def nodeHome = tool name: 'NODE_HOME', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-                        env.PATH = "${nodeHome}/bin:${env.PATH}"
-                    }
+                    // Install dependencies
                     sh 'npm install'
+                    
+                    // Fix permission for vite binary
+                    sh 'chmod +x node_modules/.bin/vite'
+
+                    // Build the frontend
                     sh 'npm run build'
                 }
             }
@@ -42,6 +53,7 @@ pipeline {
             steps {
                 dir("${env.FRONTEND_DIR}") {
                     sh """
+                        rm -rf frontend_war
                         mkdir -p frontend_war/WEB-INF
                         cp -r dist/* frontend_war/
                         jar -cvf ../${FRONTEND_WAR} -C frontend_war .
