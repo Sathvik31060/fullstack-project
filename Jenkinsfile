@@ -2,8 +2,10 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK_HOME'        // Make sure JDK 21 is installed in Jenkins
+        // These must match names in Jenkins Global Tool Configuration
+        jdk 'JDK_HOME'
         maven 'MAVEN_HOME'
+        nodejs 'NODE_HOME'
     }
 
     environment {
@@ -25,20 +27,15 @@ pipeline {
             }
         }
 
-        stage('Setup Node') {
-            steps {
-                script {
-                    def nodeHome = tool name: 'NODE_HOME', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-                    env.PATH = "${nodeHome}/bin:${env.PATH}"
-                }
-            }
-        }
-
         stage('Build Frontend (Vite)') {
             steps {
                 dir("${env.FRONTEND_DIR}") {
+                    script {
+                        def nodeHome = tool name: 'NODE_HOME', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                        env.PATH = "${nodeHome}/bin:${env.PATH}"
+                    }
                     sh 'npm install'
-                    sh 'chmod +x node_modules/.bin/vite'  // Fix permission
+                    sh 'chmod +x node_modules/.bin/vite'
                     sh 'npm run build'
                 }
             }
@@ -50,7 +47,7 @@ pipeline {
                     sh """
                         rm -rf frontend_war
                         mkdir -p frontend_war/WEB-INF
-                        cp -r dist/* frontend_war/
+                        cp -r dist/assets dist/index.html frontend_war/
                         jar -cvf ../${FRONTEND_WAR} -C frontend_war .
                     """
                 }
@@ -60,6 +57,15 @@ pipeline {
         stage('Build Backend (Spring Boot WAR)') {
             steps {
                 dir("${env.BACKEND_DIR}") {
+                    script {
+                        // Correctly set JAVA_HOME for Maven
+                        def javaHome = tool name: 'JDK_HOME', type: 'jdk'
+                        env.JAVA_HOME = javaHome
+                        env.PATH = "${javaHome}/bin:${env.PATH}"
+
+                        def mavenHome = tool name: 'MAVEN_HOME', type: 'maven'
+                        env.PATH = "${mavenHome}/bin:${env.PATH}"
+                    }
                     sh 'mvn clean package -DskipTests'
                     sh "cp target/*.war ../${BACKEND_WAR}"
                 }
