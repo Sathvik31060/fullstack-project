@@ -24,7 +24,7 @@ const App = () => {
   );
 
   // ✅ Added BASE_URL here (line 19 equivalent)
-  const BASE_URL = "http://localhost:9091/car-frontend";
+  const BASE_URL = "http:54.172.46.66:9091/car-frontend";
 
   const element = document.documentElement;
 
